@@ -47,6 +47,13 @@ const (
 	MARKET_DATA_URI  = "/v1/marketdata/"
 )
 
+var timeoutHttpClient = &http.Client{
+	Transport: &http.Transport{
+		MaxIdleConnsPerHost: 10,
+	},
+	Timeout: time.Second * 3,
+}
+
 type Api struct {
 	url    string
 	key    string
@@ -269,7 +276,7 @@ func (api *Api) request(verb, url string, params map[string]interface{}) ([]byte
 		}
 	}
 
-	client := &http.Client{}
+	client := timeoutHttpClient
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
